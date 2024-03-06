@@ -92,7 +92,7 @@ func Base() templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><script src=\"https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp\"></script><title>Kubernetes Config Mapper</title></head><body class=\"flex flex-col min-h-screen bg-gray-900 text-white\"><header class=\"py-4 bg-gray-800\"><div class=\"container mx-auto\"><!-- Your header content goes here --><h1 class=\"text-2xl font-bold\">Kubernetes Config Mapper</h1></div></header>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><script src=\"/static/htmx.min.js\"></script><script src=\"https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp\"></script><title>Kubernetes Config Mapper</title></head><body class=\"flex flex-col min-h-screen bg-gray-900 text-white\"><header class=\"py-4 bg-gray-800\"><div class=\"container mx-auto\"><!-- Your header content goes here --><h1 class=\"text-2xl font-bold\">Kubernetes Config Mapper</h1></div></header>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

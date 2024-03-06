@@ -46,6 +46,8 @@ func (h *Handler) Ping(c echo.Context) error {
 }
 
 func (h *Handler) mapRoute() {
+	h.Router.Static("/static", "./static")
+
 	h.Router.GET("/ping", h.Ping)
 	h.Router.GET("/", h.IndexView)
 }
