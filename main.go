@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/by-sabbir/echo-scaffold/handlers"
+	"github.com/by-sabbir/config-mapper/handlers"
 )
 
 func main() {
@@ -16,7 +16,7 @@ func main() {
 func run() error {
 
 	srv := handlers.NewHandler()
-
 	// srv.Logger.Info("server initializing", "host", srv.Server.Addr)
+
 	return srv.Server.ListenAndServe()
 }

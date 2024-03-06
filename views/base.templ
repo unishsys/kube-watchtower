@@ -1,0 +1,56 @@
+package views
+
+import "time"
+import "strconv"
+
+func getYear() string {
+    yInt := time.Now().Year()
+    return strconv.Itoa(yInt)
+}
+
+templ body() {
+    <main class="container mx-auto my-8 flex-grow">
+    <!-- Your main content goes here -->
+        <p class="text-lg">Manage Config!</p>
+    </main>
+}
+
+templ footer() {
+    <footer class="py-4 bg-gray-800">
+        <div class="container mx-auto">
+        <p class="text-sm">&copy; { getYear() } Kubernetes Config Mapper</p>
+    </div>
+    </footer>
+}
+templ Base() {
+    <!DOCTYPE html>
+    <html lang="en">
+
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+        <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
+        <title>Kubernetes Config Mapper</title>
+
+    </head>
+
+    <body class="flex flex-col min-h-screen bg-gray-900 text-white">
+
+        <header class="py-4 bg-gray-800">
+            <div class="container mx-auto">
+                <!-- Your header content goes here -->
+                <h1 class="text-2xl font-bold">Kubernetes Config Mapper</h1>
+            </div>
+        </header>
+
+            @body()
+
+        <footer class="py-4 bg-gray-800">
+            @footer()
+        </footer>
+    </body>
+
+    </html>
+
+}

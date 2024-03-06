@@ -47,4 +47,5 @@ func (h *Handler) Ping(c echo.Context) error {
 
 func (h *Handler) mapRoute() {
 	h.Router.GET("/ping", h.Ping)
+	h.Router.GET("/", h.IndexView)
 }
