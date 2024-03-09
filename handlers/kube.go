@@ -100,3 +100,22 @@ func (h *Handler) GetCmByName(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, string(bts))
 }
+
+func (h *Handler) SetConfigMapByName(c echo.Context) error {
+	ns := c.Param("namespace")
+	name := c.Param("name")
+	if len(ns) == 0 && len(name) == 0 {
+		c.Logger().Error("namespace and name needed")
+		return c.JSON(http.StatusBadRequest, "namespace and name required")
+	}
+
+	var data map[string]string
+
+	err := json.NewDecoder(c.Request().Body).Decode(&data)
+	if err != nil {
+		c.Logger().Error("could not marshal json", "err", err)
+	}
+
+	return h.KubeClient.SetConfigMapByName(c.Request().Context(), ns, name, data)
+
+}

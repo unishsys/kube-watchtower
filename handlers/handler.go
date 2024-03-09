@@ -80,4 +80,5 @@ func (h *Handler) mapRoute() {
 	rg.GET("/get-namespaces", h.GetNamespaces)
 	rg.GET("/cm/:namespace", h.GetCmByNamespace)
 	rg.GET("/cm/:namespace/:name", h.GetCmByName)
+	rg.POST("/cm/:namespace/:name", h.SetConfigMapByName)
 }
