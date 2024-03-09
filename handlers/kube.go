@@ -2,23 +2,13 @@ package handlers
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	gyaml "gopkg.in/yaml.v3"
 	"sigs.k8s.io/yaml"
 )
-
-type ConfigMap struct {
-	metav1.TypeMeta   `json:",inline"`
-	metav1.ObjectMeta `json:"metadata,omitempty" protobuf:"bytes,1,opt,name=metadata"`
-
-	Immutable *bool `json:"immutable,omitempty" protobuf:"varint,4,opt,name=immutable"`
-
-	Data map[string]string `json:"data,omitempty" protobuf:"bytes,2,rep,name=data"`
-
-	BinaryData map[string][]byte `json:"binaryData,omitempty" protobuf:"bytes,3,rep,name=binaryData"`
-}
 
 type DataHolder struct {
 	Data string `json:"data"`
@@ -79,7 +69,6 @@ func (h *Handler) GetCmByName(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
-	c.Logger().Info("========================", nx)
 
 	if err != nil {
 		c.Logger().Error("error", "error", err)
@@ -109,13 +98,30 @@ func (h *Handler) SetConfigMapByName(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, "namespace and name required")
 	}
 
-	var data map[string]string
-
-	err := json.NewDecoder(c.Request().Body).Decode(&data)
+	reqBytes, err := io.ReadAll(c.Request().Body)
 	if err != nil {
-		c.Logger().Error("could not marshal json", "err", err)
+		c.Logger().Info("could not read req body", "error", err)
+		return c.JSON(http.StatusInternalServerError, err)
 	}
 
-	return h.KubeClient.SetConfigMapByName(c.Request().Context(), ns, name, data)
+	var ydata string
+	if err := gyaml.Unmarshal(reqBytes, &ydata); err != nil {
+		c.Logger().Info("could not umarshal yaml", "error", err)
+		return c.JSON(http.StatusInternalServerError, err)
+	}
 
+	jsonData, err := yaml.YAMLToJSON([]byte(ydata))
+	if err != nil {
+		c.Logger().Info("could not umarshal json", "error", err)
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+
+	var data map[string]string
+	json.Unmarshal(jsonData, &data)
+
+	if err := h.KubeClient.SetConfigMapByName(c.Request().Context(), ns, name, data); err != nil {
+		c.Logger().Error("could not update cm", "error", err)
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+	return c.JSON(http.StatusCreated, data)
 }
