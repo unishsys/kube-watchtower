@@ -23,7 +23,7 @@ func Editor() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"card\"><div class=\"card-body\"><h1>YAML Editor</h1><div class=\"form-group\"><div id=\"editorWrapper\"><div id=\"editor\"></div></div></div><div class=\"row\"><div class=\"col-md-6\" onclick=\"submit()\"><a class=\"btn\" id=\"apply\">Apply</a></div></div></div></div><div id=\"notification\" class=\"notification\"></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"card py-5\"><div class=\"card-body\"><h1>YAML Editor</h1><div class=\"form-group\"><div id=\"editorWrapper\"><div id=\"editor\"></div></div></div><div class=\"row\"><div class=\"col-md-6\" onclick=\"submit()\"><a class=\"btn\" id=\"apply\">Apply</a></div></div></div></div><div id=\"notification\" class=\"notification\"></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
