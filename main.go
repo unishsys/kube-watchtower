@@ -21,7 +21,6 @@ func run() error {
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 	kClient := k8s.NewOutClusterKube(logger)
 	srv := handlers.NewHandler(kClient)
-	// srv.Logger.Info("server initializing", "host", srv.Server.Addr)
 
-	return srv.Server.ListenAndServe()
+	return srv.Start()
 }

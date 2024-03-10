@@ -1,10 +1,14 @@
 package handlers
 
 import (
+	"context"
 	"log/slog"
 	"net/http"
+	"os"
+	"os/signal"
 	"time"
 
+	rice "github.com/GeertJohan/go.rice"
 	"github.com/by-sabbir/config-mapper/k8s"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -51,7 +55,9 @@ func (h *Handler) Ping(c echo.Context) error {
 }
 
 func (h *Handler) mapRoute() {
-	h.Router.Static("/static", "./static")
+	assetHandler := http.FileServer(rice.MustFindBox("../static").HTTPBox())
+	h.Router.GET("/static/*", echo.WrapHandler(http.StripPrefix("/static/", assetHandler)))
+	h.Router.GET("/", h.IndexView)
 
 	h.Router.GET("/ping", h.Ping)
 
@@ -61,4 +67,27 @@ func (h *Handler) mapRoute() {
 	rg.GET("/cm/:namespace", h.GetCmByNamespace)
 	rg.GET("/cm/:namespace/:name", h.GetCmByName)
 	rg.POST("/cm/:namespace/:name", h.SetConfigMapByName)
+}
+
+func (h *Handler) Start() error {
+
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer stop()
+	// Start server
+	go func() {
+		if err := h.Server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			h.Logger.Error("shutting down the server")
+		}
+	}()
+
+	// Wait for interrupt signal to gracefully shutdown the server with a timeout of 10 seconds.
+	<-ctx.Done()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := h.Server.Shutdown(ctx); err != nil {
+		h.Logger.Error("could not gracefully shutdown", "error", err)
+		return err
+	}
+
+	return nil
 }

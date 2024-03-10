@@ -45,7 +45,7 @@ func (k *KubeClient) SetConfigMapByName(ctx context.Context, ns string, name str
 
 	cm, err := iCm.Get(ctx, name, v1.GetOptions{})
 
-	k.Logger.Info("updating cm", "cm", cm)
+	k.Logger.Info("updating cm", "cm", cm.Name)
 	if err != nil {
 		k.Logger.ErrorContext(ctx, "could not fetch cm list", "error", err)
 		return err
