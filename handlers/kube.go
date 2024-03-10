@@ -32,7 +32,7 @@ func (h *Handler) GetNamespaces(c echo.Context) error {
 	nx, err := h.KubeClient.GetNamespaces(c.Request().Context())
 	if err != nil {
 		h.Logger.Error("could fetch namespaces", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]string{
+		return c.JSON(http.StatusForbidden, map[string]string{
 			"status": "error",
 			"msg":    "Failed to Fetch Namespace",
 			"error":  err.Error(),
@@ -52,7 +52,7 @@ func (h *Handler) GetCmByNamespace(c echo.Context) error {
 	nx, err := h.KubeClient.GetConfigMaps(c.Request().Context(), ns)
 	if err != nil {
 		h.Logger.Error("could fetch namespaces", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]string{
+		return c.JSON(http.StatusForbidden, map[string]string{
 			"status": "error",
 			"msg":    "Failed to Fetch Namespace",
 			"error":  err.Error(),
@@ -74,19 +74,19 @@ func (h *Handler) GetCmByName(c echo.Context) error {
 	nx, err := h.KubeClient.GetConfigMapByName(c.Request().Context(), ns, name)
 	if err != nil {
 		h.Logger.Error("error getting cm", "error", err)
-		return c.JSON(http.StatusInternalServerError, err)
+		return c.JSON(http.StatusForbidden, err)
 	}
 
 	bytes, err := json.Marshal(nx)
 	if err != nil {
 		h.Logger.Error("error", "error", err)
-		return c.JSON(http.StatusInternalServerError, err)
+		return c.JSON(http.StatusForbidden, err)
 	}
 
 	bts, err := yaml.JSONToYAML(bytes)
 	if err != nil {
 		h.Logger.Error("error", "error", err)
-		return c.JSON(http.StatusInternalServerError, err)
+		return c.JSON(http.StatusForbidden, err)
 	}
 
 	return c.JSON(http.StatusOK, string(bts))
@@ -103,7 +103,7 @@ func (h *Handler) SetConfigMapByName(c echo.Context) error {
 	reqBytes, err := io.ReadAll(c.Request().Body)
 	if err != nil {
 		h.Logger.Info("could not read req body", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]string{
+		return c.JSON(http.StatusForbidden, map[string]string{
 			"status": "error",
 			"msg":    "ConfigMap Failed to Updated",
 			"error":  err.Error(),
@@ -113,7 +113,7 @@ func (h *Handler) SetConfigMapByName(c echo.Context) error {
 	jsonData, err := yaml.YAMLToJSON(reqBytes)
 	if err != nil {
 		h.Logger.Info("could not umarshal json", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]string{
+		return c.JSON(http.StatusForbidden, map[string]string{
 			"status": "error",
 			"msg":    "ConfigMap Failed to Updated",
 			"error":  err.Error(),
@@ -123,7 +123,7 @@ func (h *Handler) SetConfigMapByName(c echo.Context) error {
 	var data map[string]string
 	if err := json.Unmarshal(jsonData, &data); err != nil {
 		h.Logger.Error("could not unmarshal jsondata", "error", err, "jsondata", jsonData)
-		return c.JSON(http.StatusInternalServerError, map[string]string{
+		return c.JSON(http.StatusForbidden, map[string]string{
 			"status": "error",
 			"msg":    "ConfigMap Failed to Updated",
 			"error":  err.Error(),
@@ -132,7 +132,7 @@ func (h *Handler) SetConfigMapByName(c echo.Context) error {
 
 	if err := h.KubeClient.SetConfigMapByName(c.Request().Context(), ns, name, data); err != nil {
 		h.Logger.Error("could not update cm", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]string{
+		return c.JSON(http.StatusForbidden, map[string]string{
 			"status": "error",
 			"msg":    "ConfigMap Failed to Updated",
 			"error":  err.Error(),

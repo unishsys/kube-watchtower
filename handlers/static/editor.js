@@ -6,14 +6,12 @@ const cmList = document.getElementById("dropdowncm");
 let selectedCM = "";
 let selectedNS = "";
 
-// Fetch data from the API endpoint
+
 fetch("/api/v1/get-namespaces")
   .then((response) => response.json())
   .then((data) => {
-    // Clear existing list items
     nsList.innerHTML = "<option selected>None</option>";
 
-    // Populate the list items
     data.forEach((namespace) => {
       const opt = document.createElement("option");
       opt.value = namespace;
@@ -25,16 +23,12 @@ fetch("/api/v1/get-namespaces")
 
 nsList.addEventListener("click", function () {
   let selectedOption = this.options[this.selectedIndex].value;
-
   const cmList = document.getElementById("dropdowncm");
 
   fetch("/api/v1/cm/" + selectedOption)
     .then((response) => response.json())
     .then((data) => {
-      // Clear existing list items
       cmList.innerHTML = "<option selected>None</option>";
-
-      // Populate the list items
       data.forEach((cm) => {
         const opt = document.createElement("option");
         opt.value = cm;
@@ -51,7 +45,6 @@ cmList.addEventListener("click", function () {
   fetch("/api/v1/cm/" + selectedNS + "/" + selectedCM)
     .then((response) => response.json())
     .then((data) => {
-      // Clear existing list items
       let code = data;
       renderCode(code);
     })

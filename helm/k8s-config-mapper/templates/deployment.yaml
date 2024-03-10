@@ -22,6 +22,8 @@ spec:
       containers:
       - image: {{ .Values.mapper.image }}
         name: {{ .Values.mapper.app }}
+        command: ["/mapper"]
+        args: ["incluster"]
         imagePullPolicy: {{ .Values.mapper.imagePullPolicy }}
         resources:
           limits:

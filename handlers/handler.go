@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"io/fs"
-	"log"
 	"log/slog"
 	"net/http"
 	"os"
@@ -27,18 +26,11 @@ type Handler struct {
 //go:embed static
 var embededFiles embed.FS
 
-func getFileSystem(useOS bool) http.FileSystem {
-	if useOS {
-		log.Print("using live mode")
-		return http.FS(os.DirFS("static"))
-	}
-
-	log.Print("using embed mode")
+func getFileSystem() http.FileSystem {
 	fsys, err := fs.Sub(embededFiles, "static")
 	if err != nil {
 		panic(err)
 	}
-
 	return http.FS(fsys)
 }
 
@@ -76,7 +68,7 @@ func (h *Handler) Ping(c echo.Context) error {
 }
 
 func (h *Handler) mapRoute() {
-	assetHandler := http.FileServer(getFileSystem(false))
+	assetHandler := http.FileServer(getFileSystem())
 	h.Router.GET("/static/*", echo.WrapHandler(http.StripPrefix("/static/", assetHandler)))
 	h.Router.GET("/", h.IndexView)
 
