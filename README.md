@@ -14,7 +14,7 @@ We can use this tool to manage k8s resources in two ways -
 
 Note: for security reasons the pods is configured to work with `default` namespace only. To change the behavior you need to tweak with [ConfigMap RBAC Policies](./helm/k8s-config-mapper/templates/cm-rbac.yaml) and [Namespace RBAC Policies](./helm/k8s-config-mapper/templates/ns-rbac.yaml)
 
-1. For `remotecluster` installation
+2. For `remotecluster` installation
    - `make docker-up`
    - or `go run ./... remotecluster`
 
