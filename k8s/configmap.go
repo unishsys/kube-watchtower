@@ -54,20 +54,12 @@ func (k *KubeClient) SetConfigMapByName(ctx context.Context, ns string, name str
 	k.Logger.InfoContext(ctx, "cm fetch successful", "namespace", ns, "name", name)
 	cm.Data = data
 
-	// newCm := &corev1.ConfigMap{
-	// 	TypeMeta:   cm.TypeMeta,
-	// 	ObjectMeta: cm.ObjectMeta,
-	// 	Immutable:  cm.Immutable,
-	// 	BinaryData: cm.BinaryData,
-	// 	Data:       cm.Data,
-	// }
-
 	updatedCm, err := k.Client.CoreV1().ConfigMaps(ns).Update(ctx, cm, v1.UpdateOptions{})
 	if err != nil {
 		k.Logger.Error("error updating cm", "error", err)
 		return err
 	}
 
-	k.Logger.Info("cm updated", "cm", updatedCm)
+	k.Logger.Info("cm updated", "cm", updatedCm.Name)
 	return nil
 }

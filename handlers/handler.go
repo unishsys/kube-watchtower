@@ -1,10 +1,8 @@
 package handlers
 
 import (
-	"context"
 	"log/slog"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/by-sabbir/config-mapper/k8s"
@@ -15,14 +13,17 @@ import (
 type Handler struct {
 	Router     *echo.Echo
 	Server     *http.Server
+	Logger     *slog.Logger
 	KubeClient *k8s.KubeClient
 }
 
-func NewHandler() *Handler {
+func NewHandler(kubeClient *k8s.KubeClient) *Handler {
 
 	e := echo.New()
-	l := slog.New(slog.NewJSONHandler(os.Stdout, nil))
-	h := &Handler{}
+	l := kubeClient.Logger
+	h := &Handler{
+		Logger: l,
+	}
 	server := &http.Server{
 		Addr:         ":8080",
 		ReadTimeout:  30 * time.Second,
@@ -30,33 +31,13 @@ func NewHandler() *Handler {
 		WriteTimeout: 30 * time.Second,
 	}
 
-	h.KubeClient = k8s.NewOutClusterKube(l)
+	h.KubeClient = kubeClient
 
-	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
-		LogStatus:   true,
-		LogURI:      true,
-		LogError:    true,
-		HandleError: true, // forwards error to the global error handler, so it can decide appropriate status code
-		LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
-			if v.Error == nil {
-				l.LogAttrs(context.Background(), slog.LevelInfo, "REQUEST",
-					slog.String("uri", v.URI),
-					slog.Int("status", v.Status),
-				)
-			} else {
-				l.LogAttrs(context.Background(), slog.LevelError, "REQUEST_ERROR",
-					slog.String("uri", v.URI),
-					slog.Int("status", v.Status),
-					slog.String("err", v.Error.Error()),
-				)
-			}
-			return nil
-		},
-	}))
 	e.Use(middleware.CORS())
 	h.Server = server
 	h.Router = e
 	h.mapRoute()
+
 	return h
 }
 
@@ -73,7 +54,6 @@ func (h *Handler) mapRoute() {
 	h.Router.Static("/static", "./static")
 
 	h.Router.GET("/ping", h.Ping)
-	h.Router.GET("/", h.IndexView)
 
 	rg := h.Router.Group("/api/v1")
 	rg.POST("/apply", h.ApplyCM)
