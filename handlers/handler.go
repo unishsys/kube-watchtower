@@ -2,13 +2,16 @@ package handlers
 
 import (
 	"context"
+	"io/fs"
+	"log"
 	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
 
-	rice "github.com/GeertJohan/go.rice"
+	"embed"
+
 	"github.com/by-sabbir/config-mapper/k8s"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -19,6 +22,24 @@ type Handler struct {
 	Server     *http.Server
 	Logger     *slog.Logger
 	KubeClient *k8s.KubeClient
+}
+
+//go:embed static
+var embededFiles embed.FS
+
+func getFileSystem(useOS bool) http.FileSystem {
+	if useOS {
+		log.Print("using live mode")
+		return http.FS(os.DirFS("static"))
+	}
+
+	log.Print("using embed mode")
+	fsys, err := fs.Sub(embededFiles, "static")
+	if err != nil {
+		panic(err)
+	}
+
+	return http.FS(fsys)
 }
 
 func NewHandler(kubeClient *k8s.KubeClient) *Handler {
@@ -55,7 +76,7 @@ func (h *Handler) Ping(c echo.Context) error {
 }
 
 func (h *Handler) mapRoute() {
-	assetHandler := http.FileServer(rice.MustFindBox("../static").HTTPBox())
+	assetHandler := http.FileServer(getFileSystem(false))
 	h.Router.GET("/static/*", echo.WrapHandler(http.StripPrefix("/static/", assetHandler)))
 	h.Router.GET("/", h.IndexView)
 

@@ -30,9 +30,13 @@ func (h *Handler) ApplyCM(c echo.Context) error {
 func (h *Handler) GetNamespaces(c echo.Context) error {
 
 	nx, err := h.KubeClient.GetNamespaces(c.Request().Context())
-
 	if err != nil {
-		return err
+		h.Logger.Error("could fetch namespaces", "error", err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{
+			"status": "error",
+			"msg":    "Failed to Fetch Namespace",
+			"error":  err.Error(),
+		})
 	}
 
 	return c.JSON(http.StatusOK, nx)
@@ -46,9 +50,13 @@ func (h *Handler) GetCmByNamespace(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, "namespace required")
 	}
 	nx, err := h.KubeClient.GetConfigMaps(c.Request().Context(), ns)
-
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err)
+		h.Logger.Error("could fetch namespaces", "error", err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{
+			"status": "error",
+			"msg":    "Failed to Fetch Namespace",
+			"error":  err.Error(),
+		})
 	}
 
 	return c.JSON(http.StatusOK, nx)

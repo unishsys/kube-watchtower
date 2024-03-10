@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  mapper:
+    build:
+      context: ..
+      dockerfile: ./docker/Dockerfile
+    image: bysabbir/k8s-cm-editor:beta
+    volumes:
+      - ~/.kube/config:/root/.kube/config
+    network_mode: host
