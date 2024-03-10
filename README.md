@@ -22,3 +22,9 @@ visiting to `localhost:8080` should load a page like below if all ran successful
 
 ![Kubernetes ConfigMap Editor - Home Page](./_examples/home_page.png "Kubernetes ConfigMap Editor")
 
+### Notable Stacks used in this tool - 
+- [Kubernets Go SDK](https://github.com/kubernetes/client-go)
+- [templ](https://github.com/a-h/templ)
+- [echo](https://github.com/labstack/echo)
+- [cobra](https://github.com/spf13/cobra)
+- [Ace Editr](https://ace.c9.io/)
