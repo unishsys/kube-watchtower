@@ -8,7 +8,7 @@ TAG := $(shell git describe --abbrev=0 --tags)-$(shell git rev-parse --short HEA
 image:
 	go mod vendor && \
 	docker build -f docker/Dockerfile -t $(REPO):$(TAG) . && \
-	docker tag -t $(REPO):$(TAG) $(REPO)
+	docker tag $(REPO):$(TAG) $(REPO)
 
 push:
 	docker push $(REPO):$(TAG) && docker push $(REPO)
@@ -20,3 +20,6 @@ install-helm:
 	@helm upgrade --install --set $(SERVICE).image="$(REPO):$(TAG)" $(SERVICE) ./helm/k8s-config-mapper -n $(NAMESPACE)
 
 kube-up: image push install-helm
+
+docker-up:
+	docker compose -f docker/compose.yaml up --build -d
