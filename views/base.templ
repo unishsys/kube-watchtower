@@ -8,14 +8,6 @@ func getYear() string {
 	return strconv.Itoa(yInt)
 }
 
-templ footer() {
-	<footer class="py-4 bg-gray-800">
-		<div class="container mx-auto">
-			<p class="text-sm">&copy; { getYear() } Kubernetes Config Mapper</p>
-		</div>
-	</footer>
-}
-
 templ Base() {
 	<!DOCTYPE html>
 	<html lang="en">
@@ -36,11 +28,11 @@ templ Base() {
 			<header class="py-4 bg-gray-800 break-after-auto"></header>
 			<div class="container mx-auto">
 				<!-- Your header content goes here -->
-				<h1 class="text-2xl font-bold">Kubernetes Config Mapper</h1>
+				<h1 class="text-2xl font-bold">Kubernetes ConfigMap Editor</h1>
 				<div class="flex flex-col p-4">
 					<!-- namespace dropdown -->
 					<form
-						class="max-w-sm mx-auto col-span-2"
+						class="max-w-sm col-span-2"
 					>
 						<label for="dropdownns" class="mb-2 text-sm font-medium text-gray-900 dark:text-white">Select a Namespace</label>
 						<select id="dropdownns" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></select>
@@ -49,12 +41,9 @@ templ Base() {
 						<select id="dropdowncm" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></select>
 					</form>
 					<!-- Dropdown menu -->
+					@Editor()
 				</div>
-				@Editor()
 			</div>
-			<footer class="bg-gray-900 text-white">
-				@footer()
-			</footer>
 			// <script src="/static/script.js"></script>
 			<script src="/static/ace.js"></script>
 			<script src="/static/editor.js"></script>
