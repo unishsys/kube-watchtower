@@ -22,4 +22,4 @@ COPY --from=build-stage /config-mapper/appbin /config-mapper/appbin
 
 EXPOSE 8080
 
-ENTRYPOINT ["/config-mapper/appbin", "remotecluster"]
+ENTRYPOINT ["/config-mapper/appbin", "incluster"]

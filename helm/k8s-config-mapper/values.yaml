@@ -1,0 +1,10 @@
+replicaCount: 2
+version: v1
+
+mapper:
+    app: k8s-cm-mapper
+    image: bysabbir/k8s-cm-editor:k8s-beta
+    version: v1
+    containerPort: 8080
+    servicePort: 8080
+    imagePullPolicy: Always

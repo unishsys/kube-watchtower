@@ -1,0 +1,29 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .Values.mapper.app }}
+    version: {{ .Values.mapper.version }}
+  name: {{ .Values.mapper.app }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.mapper.app }}
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.mapper.app }}
+        version: {{ .Values.mapper.version }}
+    spec:
+      serviceAccountName: configmap-manager-sa
+      containers:
+      - image: {{ .Values.mapper.image }}
+        name: {{ .Values.mapper.app }}
+        imagePullPolicy: {{ .Values.mapper.imagePullPolicy }}
+        resources:
+          limits:
+            memory: "100Mi"
+            cpu: "50m"

@@ -5,7 +5,7 @@ services:
     build:
       context: ..
       dockerfile: ./docker/Dockerfile
-    image: bysabbir/k8s-cm-editor:beta
+    image: bysabbir/k8s-cm-editor:k8s-beta
     volumes:
       - ~/.kube/config:/root/.kube/config
     network_mode: host

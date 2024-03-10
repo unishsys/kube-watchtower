@@ -27,7 +27,7 @@ func init() {
 
 func runInCluster() error {
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
-	kClient := k8s.NewOutClusterKube(logger)
+	kClient := k8s.NewInClusterKube(logger)
 	srv := handlers.NewHandler(kClient)
 
 	return srv.Start()

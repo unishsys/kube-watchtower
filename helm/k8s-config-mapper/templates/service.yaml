@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: {{ .Values.mapper.app }}
+    version: {{ .Values.mapper.version }}
+  name: {{ .Values.mapper.app }}
+spec:
+  ports:
+  - name: tcp
+    port: {{ .Values.mapper.containerPort }}
+    protocol: TCP
+    targetPort: {{ .Values.mapper.containerPort }}
+  selector:
+    app: {{ .Values.mapper.app }}
+---

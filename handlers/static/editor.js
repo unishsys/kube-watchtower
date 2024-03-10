@@ -1,7 +1,8 @@
-const nsList = document.getElementById("dropdownns");
 var editor = ace.edit("editor");
 editor.setTheme("ace/theme/dracula");
-cmList = document.getElementById("dropdowncm");
+
+const nsList = document.getElementById("dropdownns");
+const cmList = document.getElementById("dropdowncm");
 let selectedCM = "";
 let selectedNS = "";
 
