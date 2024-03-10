@@ -1,16 +1,17 @@
 SERVICE := mapper
 NAMESPACE := default
-TAG := beta
 REPO := bysabbir/k8s-cm-mapper
+TAG := $(shell git describe --abbrev=0 --tags)-$(shell git rev-parse --short HEAD)
 
 
 .PHONY:
 image:
 	go mod vendor && \
-	docker build -f docker/Dockerfile -t $(REPO):$(TAG) .
+	docker build -f docker/Dockerfile -t $(REPO):$(TAG) . && \
+	docker tag -t $(REPO):$(TAG) $(REPO)
 
 push:
-	docker push $(REPO):$(TAG)
+	docker push $(REPO):$(TAG) && docker push $(REPO)
 
 uninstall-helm:
 	@helm uninstall $(SERVICE)
