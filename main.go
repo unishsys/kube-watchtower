@@ -1,26 +1,7 @@
 package main
 
-import (
-	"log"
-	"log/slog"
-	"os"
-
-	"github.com/by-sabbir/config-mapper/handlers"
-	"github.com/by-sabbir/config-mapper/k8s"
-)
+import "github.com/by-sabbir/config-mapper/cmd"
 
 func main() {
-	if err := run(); err != nil {
-		log.Fatalf("could not start server: %+v", err)
-	}
-
-}
-
-func run() error {
-
-	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
-	kClient := k8s.NewOutClusterKube(logger)
-	srv := handlers.NewHandler(kClient)
-
-	return srv.Start()
+	cmd.Execute()
 }

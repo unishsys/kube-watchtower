@@ -63,7 +63,7 @@ func NewOutClusterKube(logger *slog.Logger) *KubeClient {
 	if err != nil {
 		logger.Error("error getting out fo cluster clientset", "error", err)
 	}
-	logger.Info("out-cluster clientset initialized")
+	logger.Info("remote cluster clientset initialized")
 	return &KubeClient{
 		Client: clientset,
 		Logger: logger,
