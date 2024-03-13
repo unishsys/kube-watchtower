@@ -26,7 +26,9 @@ templ Base() {
 		</head>
 		<body class="basis-1 flex-col min-h-screen bg-gray-900 text-white">
 			<header class="py-4 bg-gray-800 break-after-auto"></header>
+			
 			<div class="container mx-auto">
+			@Deployments()
 				<!-- Your header content goes here -->
 				<h1 class="text-2xl font-bold">Kubernetes ConfigMap Editor</h1>
 				<div class="flex flex-col p-4">
