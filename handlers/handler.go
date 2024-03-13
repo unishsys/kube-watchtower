@@ -30,19 +30,10 @@ type Resp struct {
 	Data   any    `json:"data"`
 }
 
-//go:embed static
-var embededFiles embed.FS
-
-func getFileSystem() http.FileSystem {
-	fsys, err := fs.Sub(embededFiles, "static")
-	if err != nil {
-		panic(err)
-	}
-	return http.FS(fsys)
-}
+//go:embed spa
+var staticContent embed.FS
 
 func NewHandler(kubeClient *k8s.KubeClient) *Handler {
-
 	e := echo.New()
 	l := kubeClient.Logger
 	h := &Handler{
@@ -75,10 +66,14 @@ func (h *Handler) Ping(c echo.Context) error {
 }
 
 func (h *Handler) mapRoute() {
-	assetHandler := http.FileServer(getFileSystem())
-	h.Router.GET("/static/*", echo.WrapHandler(http.StripPrefix("/static/", assetHandler)))
-	h.Router.GET("/", h.IndexView)
+	// Serve static files
+	fsys, err := fs.Sub(staticContent, "spa")
+	if err != nil {
+		panic(err)
+	}
 
+	h.Router.GET("/", echo.WrapHandler(http.FileServer(http.FS(fsys))))
+	h.Router.GET("/assets/*", echo.WrapHandler(http.FileServer(http.FS(fsys))))
 	h.Router.GET("/ping", h.Ping)
 
 	rg := h.Router.Group("/api/v1")
