@@ -23,6 +23,13 @@ type Handler struct {
 	KubeClient *k8s.KubeClient
 }
 
+type Resp struct {
+	Status string `json:"status"`
+	Msg    string `json:"msg"`
+	Error  error  `json:"error"`
+	Data   any    `json:"data"`
+}
+
 //go:embed static
 var embededFiles embed.FS
 
@@ -75,11 +82,17 @@ func (h *Handler) mapRoute() {
 	h.Router.GET("/ping", h.Ping)
 
 	rg := h.Router.Group("/api/v1")
-	rg.POST("/apply", h.ApplyCM)
 	rg.GET("/get-namespaces", h.GetNamespaces)
-	rg.GET("/cm/:namespace", h.GetCmByNamespace)
-	rg.GET("/cm/:namespace/:name", h.GetCmByName)
-	rg.POST("/cm/:namespace/:name", h.SetConfigMapByName)
+	rg.POST("/apply", h.ApplyCM)
+
+	cmRg := h.Router.Group("/api/v1/cm")
+	cmRg.GET("/:namespace", h.GetCmByNamespace)
+	cmRg.GET("/:namespace/:name", h.GetCmByName)
+	cmRg.POST("/:namespace/:name", h.SetConfigMapByName)
+
+	deployRg := h.Router.Group("/api/v1/deploy")
+	deployRg.POST("/", h.ScaleDeploymentsByName)
+	deployRg.GET("/:namespace", h.ListDeploymentsByNamespace)
 }
 
 func (h *Handler) Start() error {

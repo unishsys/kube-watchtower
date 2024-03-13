@@ -10,7 +10,6 @@ let selectedNS = "";
 fetch("/api/v1/get-namespaces")
   .then((response) => response.json())
   .then((data) => {
-    nsList.innerHTML = "<option selected>None</option>";
 
     data.forEach((namespace) => {
       const opt = document.createElement("option");
@@ -28,7 +27,6 @@ nsList.addEventListener("click", function () {
   fetch("/api/v1/cm/" + selectedOption)
     .then((response) => response.json())
     .then((data) => {
-      cmList.innerHTML = "<option selected>None</option>";
       data.forEach((cm) => {
         const opt = document.createElement("option");
         opt.value = cm;
