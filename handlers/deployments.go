@@ -63,9 +63,41 @@ func (h *Handler) ScaleDeploymentsByName(c echo.Context) error {
 	}
 	c.JSON(http.StatusAccepted, Resp{
 		Status: "success",
-		Msg:    "Scale Deployment",
+		Msg:    "Scaled Deployment",
 		Error:  nil,
 		Data:   scaledDeployment,
+	})
+	return nil
+}
+
+func (h *Handler) GetContainersInDeployment(c echo.Context) error {
+	ns := c.Param("namespace")
+	name := c.Param("name")
+	if len(ns) == 0 && len(name) == 0 {
+		h.Logger.Error("namespace and name needed")
+		return c.JSON(http.StatusBadRequest, Resp{
+			Status: "error",
+			Msg:    "Namespace as Path Parameter is Required",
+			Error:  nil,
+			Data:   nil,
+		})
+	}
+
+	details, err := h.KubeClient.GetContainersInDeployment(c.Request().Context(), ns, name)
+	if err != nil {
+		h.Logger.Error("error getting deployment list", "error", err)
+		return c.JSON(http.StatusInternalServerError, Resp{
+			Status: "error",
+			Msg:    "Scale Deployment Failed",
+			Error:  err,
+			Data:   details,
+		})
+	}
+	c.JSON(http.StatusAccepted, Resp{
+		Status: "success",
+		Msg:    "Pod Details",
+		Error:  nil,
+		Data:   details,
 	})
 	return nil
 }

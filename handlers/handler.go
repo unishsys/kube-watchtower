@@ -40,7 +40,7 @@ func NewHandler(kubeClient *k8s.KubeClient) *Handler {
 		Logger: l,
 	}
 	server := &http.Server{
-		Addr:         ":8080",
+		Addr:         ":8081",
 		ReadTimeout:  30 * time.Second,
 		Handler:      e.Server.Handler,
 		WriteTimeout: 30 * time.Second,
@@ -88,6 +88,7 @@ func (h *Handler) mapRoute() {
 	deployRg := h.Router.Group("/api/v1/deploy")
 	deployRg.POST("/", h.ScaleDeploymentsByName)
 	deployRg.GET("/:namespace", h.ListDeploymentsByNamespace)
+	deployRg.GET("/:namespace/:name", h.GetContainersInDeployment)
 }
 
 func (h *Handler) Start() error {

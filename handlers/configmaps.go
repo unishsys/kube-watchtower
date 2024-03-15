@@ -190,7 +190,7 @@ func (h *Handler) SetConfigMapByName(c echo.Context) error {
 		})
 	}
 	return c.JSON(http.StatusCreated, Resp{
-		Status: "sucess",
+		Status: "success",
 		Msg:    "ConfigMap Updated",
 		Error:  nil,
 		Data:   nil,
