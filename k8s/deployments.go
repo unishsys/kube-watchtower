@@ -10,12 +10,13 @@ import (
 )
 
 type DeploymentState struct {
-	Name             string    `json:"name"`
-	Replicas         int32     `json:"replicas"`
-	AvailableRelicas int32     `json:"availableReplicas"`
-	ReadyReplicas    int32     `json:"readyReplicas"`
-	Status           string    `json:"status"`
-	CreatedAt        time.Time `json:"createdAt"`
+	Name             string            `json:"name"`
+	Replicas         int32             `json:"replicas"`
+	AvailableRelicas int32             `json:"availableReplicas"`
+	ReadyReplicas    int32             `json:"readyReplicas"`
+	Status           string            `json:"status"`
+	Labels           map[string]string `json:"labels"`
+	CreatedAt        time.Time         `json:"createdAt"`
 }
 
 type PodDetails struct {
@@ -46,6 +47,7 @@ func (k *KubeClient) ListDeploymentsByNamespace(ctx context.Context, ns string) 
 			AvailableRelicas: deployment.Status.AvailableReplicas,
 			ReadyReplicas:    deployment.Status.ReadyReplicas,
 			CreatedAt:        deployment.CreationTimestamp.Time,
+			Labels:           deployment.Labels,
 			Status:           deploymentStatus,
 		}
 		dList = append(dList, d)
