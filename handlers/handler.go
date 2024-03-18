@@ -89,6 +89,9 @@ func (h *Handler) mapRoute() {
 	deployRg.POST("/", h.ScaleDeploymentsByName)
 	deployRg.GET("/:namespace", h.ListDeploymentsByNamespace)
 	deployRg.GET("/:namespace/:name", h.GetContainersInDeployment)
+
+	svcRg := h.Router.Group("/api/v1/svc")
+	svcRg.POST("/", h.CreateService)
 }
 
 func (h *Handler) Start() error {
