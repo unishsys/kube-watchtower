@@ -1,6 +1,6 @@
 package main
 
-import "github.com/by-sabbir/config-mapper/cmd"
+import "github.com/by-sabbir/kube-watchtower/cmd"
 
 func main() {
 	cmd.Execute()

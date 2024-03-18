@@ -17,7 +17,7 @@ uninstall-helm:
 	@helm uninstall $(SERVICE)
 
 install-helm:
-	@helm upgrade --install --set $(SERVICE).image="$(REPO):$(TAG)" $(SERVICE) ./helm/k8s-config-mapper -n $(NAMESPACE)
+	@helm upgrade --install --set $(SERVICE).image="$(REPO):$(TAG)" $(SERVICE) ./helm/k8s-kube-watchtower -n $(NAMESPACE)
 
 kube-up: image push install-helm
 

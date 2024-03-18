@@ -11,7 +11,7 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "config-mapper",
+	Use:   "kube-watchtower",
 	Short: "Enjoy editing your Kubernetes config map with a user-friendly web editor!",
 
 	Run: func(cmd *cobra.Command, args []string) {

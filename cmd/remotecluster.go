@@ -5,8 +5,8 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/by-sabbir/config-mapper/handlers"
-	"github.com/by-sabbir/config-mapper/k8s"
+	"github.com/by-sabbir/kube-watchtower/handlers"
+	"github.com/by-sabbir/kube-watchtower/k8s"
 	"github.com/spf13/cobra"
 )
 

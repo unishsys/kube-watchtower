@@ -12,7 +12,7 @@ We can use this tool to manage k8s resources in two ways -
    - `make kube-up`
    - `kubectl port-forward deployments/k8s-cm-mapper 8080:8080`
 
-Note: for security reasons the pods is configured to work with `default` namespace only. To change the behavior you need to tweak with [ConfigMap RBAC Policies](./helm/k8s-config-mapper/templates/cm-rbac.yaml) and [Namespace RBAC Policies](./helm/k8s-config-mapper/templates/ns-rbac.yaml)
+Note: for security reasons the pods is configured to work with `default` namespace only. To change the behavior you need to tweak with [ConfigMap RBAC Policies](./helm/k8s-kube-watchtower/templates/cm-rbac.yaml) and [Namespace RBAC Policies](./helm/k8s-kube-watchtower/templates/ns-rbac.yaml)
 
 2. For `remotecluster` installation
    - `make docker-up`

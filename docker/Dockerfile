@@ -1,7 +1,7 @@
 # Build the application from source
 FROM golang:1.22 AS build-stage
 
-WORKDIR /config-mapper
+WORKDIR /kube-watchtower
 
 
 COPY . .
@@ -18,6 +18,6 @@ FROM debian:bookworm-slim AS build-release-stage
 
 WORKDIR /
 
-COPY --from=build-stage /config-mapper/appbin /mapper
+COPY --from=build-stage /kube-watchtower/appbin /mapper
 
 EXPOSE 8080

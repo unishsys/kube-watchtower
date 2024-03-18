@@ -11,7 +11,7 @@ import (
 
 	"embed"
 
-	"github.com/by-sabbir/config-mapper/k8s"
+	"github.com/by-sabbir/kube-watchtower/k8s"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -40,7 +40,7 @@ func NewHandler(kubeClient *k8s.KubeClient) *Handler {
 		Logger: l,
 	}
 	server := &http.Server{
-		Addr:         ":8081",
+		Addr:         ":8080",
 		ReadTimeout:  30 * time.Second,
 		Handler:      e.Server.Handler,
 		WriteTimeout: 30 * time.Second,
