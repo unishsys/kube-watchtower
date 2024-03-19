@@ -3,6 +3,7 @@ package k8s
 import (
 	"context"
 	"strconv"
+	"strings"
 
 	corev1 "k8s.io/api/core/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -73,11 +74,16 @@ func (k *KubeClient) GetAllServicesByNs(ctx context.Context, ns string) ([]Servi
 	var sx []ServiceInfo
 	for _, svc := range svcList.Items {
 		port := strconv.Itoa(int(svc.Spec.Ports[0].Port)) + " -> " + strconv.Itoa(int(svc.Spec.Ports[0].NodePort))
+		ing := svc.Status.LoadBalancer.Ingress
+		ingressIp := " "
+		for _, i := range ing {
+			ingressIp += i.IP
+		}
 		var s ServiceInfo
 		s.Name = svc.Name
 		s.Type = string(svc.Spec.Type)
 		s.ClusterIp = svc.Spec.ClusterIP
-		s.ExternalIp = svc.Spec.LoadBalancerIP
+		s.ExternalIp = strings.TrimSpace(ingressIp)
 		s.Ports = port
 		s.CreatedAt = svc.CreationTimestamp
 
