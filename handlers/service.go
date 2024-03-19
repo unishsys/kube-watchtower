@@ -65,11 +65,44 @@ func (h *Handler) GetAllServicesByNs(c echo.Context) error {
 		})
 	}
 
-	c.JSON(http.StatusAccepted, Resp{
+	c.JSON(http.StatusOK, Resp{
 		Status: "success",
 		Msg:    "Successfully Fetched All Services",
 		Error:  nil,
 		Data:   services,
+	})
+	return nil
+}
+
+func (h *Handler) DeleteServiceByName(c echo.Context) error {
+	ns := c.Param("namespace")
+	name := c.Param("name")
+	if len(ns) == 0 && len(name) == 0 {
+		h.Logger.Error("namespace and name needed")
+		return c.JSON(http.StatusBadRequest, Resp{
+			Status: "error",
+			Msg:    "Namespace as Path Parameter is Required",
+			Error:  nil,
+			Data:   nil,
+		})
+	}
+
+	err := h.KubeClient.DeleteServiceByName(c.Request().Context(), ns, name)
+	if err != nil {
+		h.Logger.Error("GetAllServices", "error", err)
+		return c.JSON(http.StatusInternalServerError, Resp{
+			Status: "error",
+			Msg:    "Deleting Service Failed",
+			Error:  err,
+			Data:   nil,
+		})
+	}
+
+	c.JSON(http.StatusNoContent, Resp{
+		Status: "success",
+		Msg:    "Successfully Deleted Service",
+		Error:  nil,
+		Data:   nil,
 	})
 	return nil
 }

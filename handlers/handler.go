@@ -93,6 +93,7 @@ func (h *Handler) mapRoute() {
 	svcRg := h.Router.Group("/api/v1/svc")
 	svcRg.POST("/", h.CreateService)
 	svcRg.GET("/:namespace", h.GetAllServicesByNs)
+	svcRg.DELETE("/:namespace/:name", h.DeleteServiceByName)
 }
 
 func (h *Handler) Start() error {
