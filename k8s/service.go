@@ -86,3 +86,15 @@ func (k *KubeClient) GetAllServicesByNs(ctx context.Context, ns string) ([]Servi
 
 	return sx, nil
 }
+
+func (k *KubeClient) DeleteServiceByName(ctx context.Context, ns string, name string) error {
+
+	svcClient := k.Client.CoreV1().Services(ns)
+
+	err := svcClient.Delete(ctx, name, v1.DeleteOptions{})
+	if err != nil {
+		k.Logger.Error("Service Deletion Failed", "error", err)
+		return err
+	}
+	return nil
+}
