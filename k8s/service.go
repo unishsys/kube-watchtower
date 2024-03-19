@@ -2,6 +2,7 @@ package k8s
 
 import (
 	"context"
+	"strconv"
 
 	corev1 "k8s.io/api/core/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -17,6 +18,15 @@ type ServiceOptions struct {
 	Protocol      string            `json:"protocol"`
 	Selector      map[string]string `json:"selector"`
 	Type          string            `json:"type"`
+}
+
+type ServiceInfo struct {
+	Name       string  `json:"name"`
+	Type       string  `json:"type"`
+	ClusterIp  string  `json:"clusterIp"`
+	ExternalIp string  `json:"externalIp"`
+	Ports      string  `json:"ports"`
+	CreatedAt  v1.Time `json:"createdAt"`
 }
 
 func (k *KubeClient) CreateService(ctx context.Context, svc *ServiceOptions) (*corev1.Service, error) {
@@ -49,4 +59,30 @@ func (k *KubeClient) CreateService(ctx context.Context, svc *ServiceOptions) (*c
 	}
 
 	return createdService, nil
+}
+
+func (k *KubeClient) GetAllServicesByNs(ctx context.Context, ns string) ([]ServiceInfo, error) {
+	svcClient := k.Client.CoreV1().Services(ns)
+
+	svcList, err := svcClient.List(ctx, v1.ListOptions{})
+	if err != nil {
+		k.Logger.Error("List Services Failed", "error", err)
+		return []ServiceInfo{}, err
+	}
+
+	var sx []ServiceInfo
+	for _, svc := range svcList.Items {
+		port := strconv.Itoa(int(svc.Spec.Ports[0].Port)) + " -> " + strconv.Itoa(int(svc.Spec.Ports[0].NodePort))
+		var s ServiceInfo
+		s.Name = svc.Name
+		s.Type = string(svc.Spec.Type)
+		s.ClusterIp = svc.Spec.ClusterIP
+		s.ExternalIp = svc.Spec.LoadBalancerIP
+		s.Ports = port
+		s.CreatedAt = svc.CreationTimestamp
+
+		sx = append(sx, s)
+	}
+
+	return sx, nil
 }

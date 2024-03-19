@@ -41,3 +41,35 @@ func (h *Handler) CreateService(c echo.Context) error {
 	})
 	return nil
 }
+
+func (h *Handler) GetAllServicesByNs(c echo.Context) error {
+	ns := c.Param("namespace")
+	if len(ns) == 0 {
+		h.Logger.Error("namespace and name needed")
+		return c.JSON(http.StatusBadRequest, Resp{
+			Status: "error",
+			Msg:    "Namespace as Path Parameter is Required",
+			Error:  nil,
+			Data:   nil,
+		})
+	}
+
+	services, err := h.KubeClient.GetAllServicesByNs(c.Request().Context(), ns)
+	if err != nil {
+		h.Logger.Error("GetAllServices", "error", err)
+		return c.JSON(http.StatusInternalServerError, Resp{
+			Status: "error",
+			Msg:    "Fetching Services Failed",
+			Error:  err,
+			Data:   services,
+		})
+	}
+
+	c.JSON(http.StatusAccepted, Resp{
+		Status: "success",
+		Msg:    "Successfully Fetched All Services",
+		Error:  nil,
+		Data:   services,
+	})
+	return nil
+}
