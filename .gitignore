@@ -24,5 +24,6 @@ tmp/
 # Go workspace file
 go.work
 scratch/
+mapper
 # End of https://www.toptal.com/developers/gitignore/api/go
 n
