@@ -10,7 +10,7 @@ import (
 type NodeCondition struct {
 	Type          string    `json:"type"`
 	Status        string    `json:"status"`
-	Message       string    `json:"messge"`
+	Message       string    `json:"message"`
 	LastHeartBeat time.Time `json:"lastBeat"`
 }
 
