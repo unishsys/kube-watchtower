@@ -8,19 +8,20 @@ import (
 )
 
 type NodeCondition struct {
-	Type          string
-	Status        string
-	Message       string
-	LastHeartBeat time.Time
+	Type          string    `json:"type"`
+	Status        string    `json:"status"`
+	Message       string    `json:"messge"`
+	LastHeartBeat time.Time `json:"lastBeat"`
 }
 
 type NodeInfo struct {
-	NodeName       string
-	CpuQuantity    int64
-	MemoryQuantity int64
-	PodQuantity    int64
-	ContainerCount int
-	Conditions     []NodeCondition
+	NodeName       string          `json:"nodeName"`
+	CpuQuantity    int64           `json:"cpuQuantity"`
+	MemoryQuantity int64           `json:"memoryQuantity"`
+	PodQuantity    int64           `json:"podQuantity"`
+	ContainerCount int             `json:"containerCount"`
+	Conditions     []NodeCondition `json:"conditions"`
+	Ready          bool            `json:"ready"`
 }
 
 func (k *KubeClient) GetNodesInfo(ctx context.Context) ([]NodeInfo, error) {
@@ -60,7 +61,10 @@ func (k *KubeClient) GetNodesInfo(ctx context.Context) ([]NodeInfo, error) {
 			nc.Status = string(condition.Status)
 			nc.Message = condition.Message
 			nc.LastHeartBeat = condition.LastHeartbeatTime.Time
-
+			ni.Ready = false
+			if nc.Type == "Ready" {
+				ni.Ready = true
+			}
 			ni.Conditions = append(ni.Conditions, nc)
 		}
 
