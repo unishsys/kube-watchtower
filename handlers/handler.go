@@ -80,6 +80,9 @@ func (h *Handler) mapRoute() {
 	rg.GET("/get-namespaces", h.GetNamespaces)
 	rg.POST("/apply", h.ApplyCM)
 
+	nodeRg := h.Router.Group("/api/v1/node")
+	nodeRg.GET("/", h.GetNodesInfo)
+
 	cmRg := h.Router.Group("/api/v1/cm")
 	cmRg.GET("/:namespace", h.GetCmByNamespace)
 	cmRg.GET("/:namespace/:name", h.GetCmByName)
@@ -94,6 +97,7 @@ func (h *Handler) mapRoute() {
 	svcRg.POST("/", h.CreateService)
 	svcRg.GET("/:namespace", h.GetAllServicesByNs)
 	svcRg.DELETE("/:namespace/:name", h.DeleteServiceByName)
+
 }
 
 func (h *Handler) Start() error {
