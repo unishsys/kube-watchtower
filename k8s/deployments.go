@@ -140,7 +140,7 @@ func (k *KubeClient) UpdateDeploymentYaml(ctx context.Context, ns string, name s
 	}
 
 	if err := yaml.Unmarshal([]byte(updatedSpecYaml), &deploy.Spec); err != nil {
-		k.Logger.Error("marshaling deploy failed", "error", err)
+		k.Logger.Error("unmarshaling deploy failed", "error", err)
 		return "", err
 	}
 
