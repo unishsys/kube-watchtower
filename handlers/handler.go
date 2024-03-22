@@ -80,8 +80,11 @@ func (h *Handler) mapRoute() {
 	rg.GET("/get-namespaces", h.GetNamespaces)
 	rg.POST("/apply", h.ApplyCM)
 
-	nodeRg := h.Router.Group("/api/v1/node")
+	nodeRg := h.Router.Group("/api/v1/nodes")
 	nodeRg.GET("/", h.GetNodesInfo)
+
+	podRg := h.Router.Group("/api/v1/pods")
+	podRg.GET("/", h.GetAllPodsInfo)
 
 	cmRg := h.Router.Group("/api/v1/cm")
 	cmRg.GET("/:namespace", h.GetCmByNamespace)

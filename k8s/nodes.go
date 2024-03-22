@@ -5,6 +5,7 @@ import (
 	"time"
 
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	metrics "k8s.io/metrics/pkg/client/clientset/versioned"
 )
 
 type NodeCondition struct {
@@ -16,15 +17,22 @@ type NodeCondition struct {
 
 type NodeInfo struct {
 	NodeName       string          `json:"nodeName"`
-	CpuQuantity    int64           `json:"cpuQuantity"`
-	MemoryQuantity int64           `json:"memoryQuantity"`
-	PodQuantity    int64           `json:"podQuantity"`
+	CpuQuantity    float64         `json:"cpuQuantity"`
+	MemoryQuantity float64         `json:"memoryQuantity"`
+	CpuUsage       float64         `json:"cpuUsage"`
+	MemoryUsage    float64         `json:"memoryUsage"`
+	PodQuantity    float64         `json:"podQuantity"`
 	ContainerCount int             `json:"containerCount"`
 	Conditions     []NodeCondition `json:"conditions"`
 	Ready          bool            `json:"ready"`
 }
 
 func (k *KubeClient) GetNodesInfo(ctx context.Context) ([]NodeInfo, error) {
+	mc, err := metrics.NewForConfig(k.Config)
+	if err != nil {
+		k.Logger.Error("Metrics Client initiation failed", "error", err)
+		return []NodeInfo{}, err
+	}
 
 	nodeClient := k.Client.CoreV1().Nodes()
 	nodeList, err := nodeClient.List(ctx, v1.ListOptions{})
@@ -32,27 +40,31 @@ func (k *KubeClient) GetNodesInfo(ctx context.Context) ([]NodeInfo, error) {
 		k.Logger.Error("Error listing nodes", "error", err)
 		return []NodeInfo{}, nil
 	}
-
 	var nix []NodeInfo
 	for _, node := range nodeList.Items {
 		var ni NodeInfo
-
 		ni.NodeName = node.Name
 		ni.ContainerCount = len(node.Status.Images)
 		capacity := node.Status.Capacity
 		cpuQuantity := capacity.Cpu()
-		cpuInt, _ := cpuQuantity.AsInt64()
-		ni.CpuQuantity = cpuInt
+		cpuQ := cpuQuantity.AsApproximateFloat64()
+		ni.CpuQuantity = cpuQ
 
 		memQuantity := capacity.Memory()
-		memInt, _ := memQuantity.AsInt64()
-		memGi := memInt / (1024 * 1024 * 1024)
+		memQ := memQuantity.AsApproximateFloat64()
 
-		ni.MemoryQuantity = memGi
+		ni.MemoryQuantity = memQ
 
 		podQuantity := capacity.Pods()
-		podsInt, _ := podQuantity.AsInt64()
-		ni.PodQuantity = podsInt
+		podsQ := podQuantity.AsApproximateFloat64()
+		ni.PodQuantity = podsQ
+
+		nodeMetrics, _ := mc.MetricsV1beta1().NodeMetricses().Get(ctx, ni.NodeName, v1.GetOptions{})
+		nodeCpu := nodeMetrics.Usage.Cpu()
+		nodeMem := nodeMetrics.Usage.Memory()
+
+		ni.CpuUsage = nodeCpu.AsApproximateFloat64()
+		ni.MemoryUsage = nodeMem.AsApproximateFloat64()
 
 		conditions := node.Status.Conditions
 		for _, condition := range conditions {

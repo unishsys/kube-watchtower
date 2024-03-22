@@ -22,6 +22,7 @@ import (
 type KubeClient struct {
 	Client *kubernetes.Clientset
 	Logger *slog.Logger
+	Config *rest.Config
 }
 
 func NewInClusterKube(logger *slog.Logger) *KubeClient {
@@ -40,6 +41,7 @@ func NewInClusterKube(logger *slog.Logger) *KubeClient {
 	return &KubeClient{
 		Client: clientset,
 		Logger: logger,
+		Config: config,
 	}
 }
 
@@ -67,5 +69,6 @@ func NewOutClusterKube(logger *slog.Logger) *KubeClient {
 	return &KubeClient{
 		Client: clientset,
 		Logger: logger,
+		Config: config,
 	}
 }
