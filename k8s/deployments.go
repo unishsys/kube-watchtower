@@ -120,7 +120,7 @@ func (k *KubeClient) GetDeploymentYaml(ctx context.Context, ns string, name stri
 		return "", err
 	}
 
-	deployBytes, err := yaml.Marshal(deploy)
+	deployBytes, err := yaml.Marshal(deploy.Spec)
 	if err != nil {
 		k.Logger.Error("marshaling deploy failed", "error", err)
 		return "", err
@@ -129,7 +129,7 @@ func (k *KubeClient) GetDeploymentYaml(ctx context.Context, ns string, name stri
 	return string(deployBytes), nil
 }
 
-func (k *KubeClient) UpdateDeploymentYaml(ctx context.Context, ns string, name string, updatedYaml string) (string, error) {
+func (k *KubeClient) UpdateDeploymentYaml(ctx context.Context, ns string, name string, updatedSpecYaml string) (string, error) {
 
 	deployClient := k.Client.AppsV1().Deployments(ns)
 
@@ -139,7 +139,7 @@ func (k *KubeClient) UpdateDeploymentYaml(ctx context.Context, ns string, name s
 		return "", err
 	}
 
-	if err := yaml.Unmarshal([]byte(updatedYaml), &deploy); err != nil {
+	if err := yaml.Unmarshal([]byte(updatedSpecYaml), &deploy.Spec); err != nil {
 		k.Logger.Error("marshaling deploy failed", "error", err)
 		return "", err
 	}
