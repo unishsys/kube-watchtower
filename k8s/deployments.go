@@ -7,6 +7,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
+	"sigs.k8s.io/yaml"
 )
 
 type DeploymentState struct {
@@ -109,4 +110,21 @@ func (k *KubeClient) GetContainersInDeployment(ctx context.Context, ns string, n
 	}
 
 	return podDetails, nil
+}
+
+func (k *KubeClient) GetDeploymentYaml(ctx context.Context, ns string, name string) (string, error) {
+
+	deploy, err := k.Client.AppsV1().Deployments(ns).Get(ctx, name, v1.GetOptions{})
+	if err != nil {
+		k.Logger.Info("fetch deploy failed", "error", err)
+		return "", err
+	}
+
+	deployBytes, err := yaml.Marshal(deploy)
+	if err != nil {
+		k.Logger.Info("marshaling deploy failed", "error", err)
+		return "", err
+	}
+
+	return string(deployBytes), nil
 }
