@@ -150,7 +150,7 @@ func (k *KubeClient) UpdateDeploymentYaml(ctx context.Context, ns string, name s
 		return "", err
 	}
 
-	deployBytes, err := yaml.Marshal(updatedDeployment)
+	deployBytes, err := yaml.Marshal(updatedDeployment.Spec)
 	if err != nil {
 		k.Logger.Error("marshaling deploy failed", "error", err)
 		return "", err
