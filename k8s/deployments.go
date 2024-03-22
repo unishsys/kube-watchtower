@@ -116,13 +116,43 @@ func (k *KubeClient) GetDeploymentYaml(ctx context.Context, ns string, name stri
 
 	deploy, err := k.Client.AppsV1().Deployments(ns).Get(ctx, name, v1.GetOptions{})
 	if err != nil {
-		k.Logger.Info("fetch deploy failed", "error", err)
+		k.Logger.Error("fetch deploy failed", "error", err)
 		return "", err
 	}
 
 	deployBytes, err := yaml.Marshal(deploy)
 	if err != nil {
-		k.Logger.Info("marshaling deploy failed", "error", err)
+		k.Logger.Error("marshaling deploy failed", "error", err)
+		return "", err
+	}
+
+	return string(deployBytes), nil
+}
+
+func (k *KubeClient) UpdateDeploymentYaml(ctx context.Context, ns string, name string, updatedYaml string) (string, error) {
+
+	deployClient := k.Client.AppsV1().Deployments(ns)
+
+	deploy, err := deployClient.Get(ctx, name, v1.GetOptions{})
+	if err != nil {
+		k.Logger.Info("fetch deploy failed", "error", err)
+		return "", err
+	}
+
+	if err := yaml.Unmarshal([]byte(updatedYaml), &deploy); err != nil {
+		k.Logger.Error("marshaling deploy failed", "error", err)
+		return "", err
+	}
+
+	updatedDeployment, err := deployClient.Update(ctx, deploy, v1.UpdateOptions{})
+	if err != nil {
+		k.Logger.Error("fetch updated deploy failed", "error", err)
+		return "", err
+	}
+
+	deployBytes, err := yaml.Marshal(updatedDeployment)
+	if err != nil {
+		k.Logger.Error("marshaling deploy failed", "error", err)
 		return "", err
 	}
 

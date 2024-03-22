@@ -133,3 +133,50 @@ func (h *Handler) GetDeploymentYaml(c echo.Context) error {
 	})
 	return nil
 }
+
+func (h *Handler) UpdateDeploymentYaml(c echo.Context) error {
+	ns := c.Param("namespace")
+	name := c.Param("name")
+	if len(ns) == 0 && len(name) == 0 {
+		h.Logger.Error("namespace and name needed")
+		return c.JSON(http.StatusBadRequest, Resp{
+			Status: "error",
+			Msg:    "Namespace as Path Parameter is Required",
+			Error:  nil,
+			Data:   nil,
+		})
+	}
+
+	type Manifest struct {
+		Data string `json:"data"`
+	}
+
+	var m Manifest
+	if err := c.Bind(&m); err != nil {
+		h.Logger.Error("error getting request body", "error", err)
+		body, _ := io.ReadAll(c.Request().Body)
+		return c.JSON(http.StatusBadRequest, Resp{
+			Status: "error",
+			Msg:    "Update Deployment Failed",
+			Error:  err,
+			Data:   string(body),
+		})
+	}
+	yaml, err := h.KubeClient.UpdateDeploymentYaml(c.Request().Context(), ns, name, m.Data)
+	if err != nil {
+		h.Logger.Error("error updating deployment yaml", "error", err)
+		return c.JSON(http.StatusInternalServerError, Resp{
+			Status: "error",
+			Msg:    "Update Deployment Failed",
+			Error:  err,
+			Data:   yaml,
+		})
+	}
+	c.JSON(http.StatusAccepted, Resp{
+		Status: "success",
+		Msg:    name + " Deployment Updated",
+		Error:  nil,
+		Data:   yaml,
+	})
+	return nil
+}

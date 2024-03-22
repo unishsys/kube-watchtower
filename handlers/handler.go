@@ -96,6 +96,7 @@ func (h *Handler) mapRoute() {
 	deployRg.GET("/:namespace", h.ListDeploymentsByNamespace)
 	deployRg.GET("/:namespace/:name", h.GetContainersInDeployment)
 	deployRg.GET("/:namespace/:name/yaml", h.GetDeploymentYaml)
+	deployRg.POST("/:namespace/:name/yaml", h.UpdateDeploymentYaml)
 
 	svcRg := h.Router.Group("/api/v1/svc")
 	svcRg.POST("/", h.CreateService)
