@@ -40,7 +40,7 @@ func NewHandler(kubeClient *k8s.KubeClient) *Handler {
 		Logger: l,
 	}
 	server := &http.Server{
-		Addr:         ":8080",
+		Addr:         ":8081",
 		ReadTimeout:  30 * time.Second,
 		Handler:      e.Server.Handler,
 		WriteTimeout: 30 * time.Second,
@@ -103,6 +103,9 @@ func (h *Handler) mapRoute() {
 	svcRg.GET("/:namespace", h.GetAllServicesByNs)
 	svcRg.DELETE("/:namespace/:name", h.DeleteServiceByName)
 
+	logsRg := h.Router.Group("/api/v1/logs")
+	logsRg.GET("/:namespace/:name", h.GetDeploymentLogs)
+
 }
 
 func (h *Handler) Start() error {
@@ -111,8 +114,9 @@ func (h *Handler) Start() error {
 	defer stop()
 	// Start server
 	go func() {
+		h.Logger.Info("initiating server", "addr", h.Server.Addr)
 		if err := h.Server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			h.Logger.Error("shutting down the server")
+			h.Logger.Error("shutting down the server", "error", err)
 		}
 	}()
 
