@@ -104,7 +104,8 @@ func (h *Handler) mapRoute() {
 	svcRg.DELETE("/:namespace/:name", h.DeleteServiceByName)
 
 	logsRg := h.Router.Group("/api/v1/logs")
-	logsRg.GET("/:namespace/:name", h.GetDeploymentLogs)
+	logsRg.GET("/deploy/:namespace/:name", h.GetDeploymentLogs)
+	logsRg.GET("/pod/:namespace/:name", h.GetPodLogs)
 
 }
 

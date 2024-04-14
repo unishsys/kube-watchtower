@@ -47,3 +47,19 @@ func (k *KubeClient) GetDeploymentLogs(ctx context.Context, ns string, name stri
 	}
 	return lr, err
 }
+
+func (k *KubeClient) GetPodLogs(ctx context.Context, ns string, name string) *rest.Request {
+	k.Logger.Info("tailing logs", "ns", ns, "pod_name", name)
+
+	var lines int64 = 20
+	var since int64 = 24 * 3600
+
+	logsReq := k.Client.CoreV1().Pods(ns).GetLogs(name, &corev1.PodLogOptions{
+		TailLines:                    &lines,
+		InsecureSkipTLSVerifyBackend: true,
+		Follow:                       true,
+		SinceSeconds:                 &since,
+	})
+
+	return logsReq
+}

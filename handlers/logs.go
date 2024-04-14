@@ -72,3 +72,54 @@ func (h *Handler) GetDeploymentLogs(c echo.Context) error {
 
 	return nil
 }
+
+func (h *Handler) GetPodLogs(c echo.Context) error {
+	ns := c.Param("namespace")
+	name := c.Param("name")
+	if len(ns) == 0 && len(name) == 0 {
+		h.Logger.Error("namespace and name needed")
+		return c.JSON(http.StatusBadRequest, Resp{
+			Status: "error",
+			Msg:    "Namespace and Pod Name as Path Parameter is Required",
+			Error:  nil,
+			Data:   nil,
+		})
+	}
+
+	req := h.KubeClient.GetPodLogs(c.Request().Context(), ns, name)
+
+	body, err := req.Stream(c.Request().Context())
+	if err != nil {
+		h.Logger.Warn("error request parsing", "error", err, "deploy", name, "ns", ns)
+	}
+	defer body.Close()
+
+	ws, err := upgrader.Upgrade(c.Response(), c.Request(), nil)
+	if err != nil {
+		h.Logger.Error("ws error", "error", err)
+		return err
+	}
+	defer ws.Close()
+
+	h.Logger.Info("ws upgraded", "conn", ws.LocalAddr().String(), "remote", ws.RemoteAddr())
+
+	for {
+		buf := make([]byte, 2048)
+		numBytes, err := body.Read(buf)
+		if numBytes == 0 {
+			continue
+		}
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			fmt.Println("error", err)
+		}
+		err = ws.WriteMessage(websocket.TextMessage, buf[:numBytes])
+		if err != nil {
+			h.Logger.Error("could not write msg to ws", "error", err, "ns", ns, "name", name)
+		}
+	}
+
+	return nil
+}
