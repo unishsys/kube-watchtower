@@ -42,7 +42,9 @@ func (h *Handler) GetDeploymentLogs(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+
 	defer ws.Close()
+
 	h.Logger.Info("ws upgraded", "conn", ws.LocalAddr().String())
 
 	for _, r := range reqs {
@@ -52,6 +54,13 @@ func (h *Handler) GetDeploymentLogs(c echo.Context) error {
 		}
 		defer body.Close()
 		for {
+			go func() {
+				_, _, err := ws.ReadMessage()
+				if err != nil {
+					h.Logger.Info("closing connection", "remote", ws.RemoteAddr())
+					ws.Close()
+				}
+			}()
 			buf := make([]byte, 2048)
 			numBytes, err := body.Read(buf)
 			if numBytes == 0 {
@@ -104,6 +113,16 @@ func (h *Handler) GetPodLogs(c echo.Context) error {
 	h.Logger.Info("ws upgraded", "conn", ws.LocalAddr().String(), "remote", ws.RemoteAddr())
 
 	for {
+
+		go func() {
+			_, _, err := ws.ReadMessage()
+
+			if err != nil {
+				h.Logger.Info("closing connection", "remote", ws.RemoteAddr(), "error", err)
+				ws.Close()
+			}
+		}()
+
 		buf := make([]byte, 2048)
 		numBytes, err := body.Read(buf)
 		if numBytes == 0 {
