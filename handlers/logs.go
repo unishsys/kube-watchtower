@@ -4,13 +4,19 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
 )
 
 var (
-	upgrader = websocket.Upgrader{}
+	upgrader = websocket.Upgrader{
+		CheckOrigin: func(r *http.Request) bool {
+			return strings.Contains(r.Host, "192.168.1")
+		},
+		EnableCompression: true,
+	}
 )
 
 func (h *Handler) GetDeploymentLogs(c echo.Context) error {
@@ -53,14 +59,16 @@ func (h *Handler) GetDeploymentLogs(c echo.Context) error {
 			h.Logger.Warn("error request parsing", "error", err, "deploy", name, "ns", ns)
 		}
 		defer body.Close()
+		go func() {
+			_, _, err := ws.ReadMessage()
+
+			if err != nil {
+				h.Logger.Info("closing connection", "remote", ws.RemoteAddr(), "error", err)
+				ws.Close()
+			}
+		}()
+
 		for {
-			go func() {
-				_, _, err := ws.ReadMessage()
-				if err != nil {
-					h.Logger.Info("closing connection", "remote", ws.RemoteAddr())
-					ws.Close()
-				}
-			}()
 			buf := make([]byte, 2048)
 			numBytes, err := body.Read(buf)
 			if numBytes == 0 {
@@ -75,6 +83,8 @@ func (h *Handler) GetDeploymentLogs(c echo.Context) error {
 			err = ws.WriteMessage(websocket.TextMessage, buf[:numBytes])
 			if err != nil {
 				h.Logger.Error("could not write msg to ws", "error", err, "ns", ns, "name", name)
+				ws.Close()
+				break
 			}
 		}
 	}
@@ -112,16 +122,16 @@ func (h *Handler) GetPodLogs(c echo.Context) error {
 
 	h.Logger.Info("ws upgraded", "conn", ws.LocalAddr().String(), "remote", ws.RemoteAddr())
 
+	go func() {
+		_, _, err := ws.ReadMessage()
+
+		if err != nil {
+			h.Logger.Info("closing connection", "remote", ws.RemoteAddr(), "error", err)
+			ws.Close()
+		}
+	}()
+
 	for {
-
-		go func() {
-			_, _, err := ws.ReadMessage()
-
-			if err != nil {
-				h.Logger.Info("closing connection", "remote", ws.RemoteAddr(), "error", err)
-				ws.Close()
-			}
-		}()
 
 		buf := make([]byte, 2048)
 		numBytes, err := body.Read(buf)
@@ -137,6 +147,8 @@ func (h *Handler) GetPodLogs(c echo.Context) error {
 		err = ws.WriteMessage(websocket.TextMessage, buf[:numBytes])
 		if err != nil {
 			h.Logger.Error("could not write msg to ws", "error", err, "ns", ns, "name", name)
+			ws.Close()
+			break
 		}
 	}
 

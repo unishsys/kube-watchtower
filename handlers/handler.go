@@ -48,8 +48,8 @@ func NewHandler(kubeClient *k8s.KubeClient) *Handler {
 
 	h.KubeClient = kubeClient
 
-	e.Use(middleware.CORS())
 	h.Server = server
+	e.Use(middleware.CORS())
 	h.Router = e
 	h.mapRoute()
 
