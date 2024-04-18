@@ -3,6 +3,7 @@ package k8s
 import (
 	"flag"
 	"log/slog"
+	"os"
 	"path/filepath"
 
 	"k8s.io/client-go/kubernetes"
@@ -30,11 +31,13 @@ func NewInClusterKube(logger *slog.Logger) *KubeClient {
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		logger.Error("error getting incluster config", "error", err)
+		os.Exit(1)
 	}
 	// creates the clientset
 	clientset, err := kubernetes.NewForConfig(config)
 	if err != nil {
 		logger.Error("error getting incluster clientset", "error", err)
+		os.Exit(1)
 	}
 
 	logger.Info("in-cluster clientset initialized")
@@ -58,12 +61,14 @@ func NewOutClusterKube(logger *slog.Logger) *KubeClient {
 	config, err := clientcmd.BuildConfigFromFlags("", *kubeconfig)
 	if err != nil {
 		logger.Error("error getting out fo cluster config", "error", err)
+		os.Exit(1)
 	}
 
 	// create the clientset
 	clientset, err := kubernetes.NewForConfig(config)
 	if err != nil {
 		logger.Error("error getting out fo cluster clientset", "error", err)
+		os.Exit(1)
 	}
 	logger.Info("remote cluster clientset initialized")
 	return &KubeClient{
