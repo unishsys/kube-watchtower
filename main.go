@@ -13,7 +13,7 @@ var (
 )
 
 func main() {
-	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 
 	logger.Info("Build Info", "Version", Version, "BuildTime", BuildTime)
 	cmd.Execute()

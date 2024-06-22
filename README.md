@@ -31,12 +31,26 @@ The Kube-Watchtower application consists of the following components:
 
 ## Usage:
 
+### Pre-requisites
+
+**`kube-watchtower` relies on `~/.kube/config` file to authenticate kubernetes.**
+
 ### Running the Application
 
 To run the Kube-Watchtower application, simply execute the following command in your terminal:
 
+1. Clone the repository
+
+2. Build from source
+
 ```bash
-go run main.go -h
+make build
+```
+
+3. Run with remote cluster configuration
+
+```bash
+./tmp/kube-watchtower remotecluster
 ```
 
 The application will start and listen for incoming requests on port 8081.
