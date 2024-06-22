@@ -1,4 +1,4 @@
-**Kube-Watchtower README**
+# Kube-Watchtower
 
 ## Introduction:
 
@@ -36,14 +36,10 @@ The Kube-Watchtower application consists of the following components:
 To run the Kube-Watchtower application, simply execute the following command in your terminal:
 
 ```bash
-go run main.go
+go run main.go -h
 ```
 
 The application will start and listen for incoming requests on port 8081.
-
-### API Endpoints
-
-Refer to the [API documentation](docs/api.md) for a comprehensive list of available endpoints and their usage details.
 
 ## Getting Started:
 
@@ -53,10 +49,6 @@ To get started with the Kube-Watchtower, follow these steps:
 2. Run `go mod init` to initialize the Go module.
 3. Run `go run main.go` to start the application.
 4. Explore the available API endpoints using your preferred HTTP client or a tool like curl.
-
-## Troubleshooting:
-
-If you encounter any issues while running the Kube-Watchtower, refer to the [troubleshooting guide](docs/troubleshooting.md) for common problems and solutions.
 
 ## License:
 
