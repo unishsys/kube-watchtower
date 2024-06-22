@@ -1,25 +1,14 @@
-SERVICE := mapper
-NAMESPACE := default
-REPO := bysabbir/k8s-cm-mapper
-TAG := $(shell git describe --abbrev=0 --tags)-$(shell git rev-parse --short HEAD)
+.PHONY: build
+
+serviceName=kube-watchtower
+version=$(shell git describe --abbrev=0 --tags || echo '0.0.0')
+versionFile=$(shell echo $(version) | tr . _)
+versionFlag="main.Version=$(version)"
+timeFlag="main.BuildTime=$(shell date +'%d-%m-%y_%H:%M')"
 
 
-.PHONY:
-image:
-	go mod vendor && \
-	docker build -f docker/Dockerfile -t $(REPO):$(TAG) . && \
-	docker tag $(REPO):$(TAG) $(REPO)
-
-push:
-	docker push $(REPO):$(TAG) && docker push $(REPO)
-
-uninstall-helm:
-	@helm uninstall $(SERVICE)
-
-install-helm:
-	@helm upgrade --install --set $(SERVICE).image="$(REPO):$(TAG)" $(SERVICE) ./helm/k8s-kube-watchtower -n $(NAMESPACE)
-
-kube-up: image push install-helm
-
-docker-up:
-	docker compose -f docker/compose.yaml up --build -d
+build:
+	go build -ldflags="-X $(versionFlag) -X $(timeFlag)" -o tmp/$(serviceName) .
+	GOARCH=amd64 GOOS=linux go build -ldflags="-X $(versionFlag) -X $(timeFlag)" -o tmp/$(serviceName)-linux-amd64-$(versionFile) .
+	GOARCH=amd64 GOOS=darwin go build -ldflags="-X $(versionFlag) -X $(timeFlag)" -o tmp/$(serviceName)-darwin-amd64-$(versionFile) .
+	GOARCH=amd64 GOOS=windows go build -ldflags="-X $(versionFlag) -X $(timeFlag)" -o tmp/$(serviceName)-windows-amd64-$(versionFile).exe .
