@@ -20,4 +20,4 @@ WORKDIR /
 
 COPY --from=build-stage /kube-watchtower/appbin /mapper
 
-EXPOSE 8080
+EXPOSE 8081

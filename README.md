@@ -1,30 +1,67 @@
-# Kubernetes ConfigMap Editor
-`Enjoy editing your Kubernetes config map with a user-friendly web editor!`
+**Kube-Watchtower README**
 
-## How it works
-We can use this tool to manage k8s resources in two ways -
-1. In Cluster - Means we are running this app in a k8s cluster (via `helm`)
-2. Outside of Cluster - Means we are running this application standalone either in our host as a container (requires `kubeconfig` for authentication)
+## Introduction:
 
-## Installation
+The Kube-Watchtower is a Kubernetes-based project designed to provide a centralized monitoring and management platform for cluster resources and deployments. This repository contains the source code for the Kube-Watchtower server-side application, written in Go.
 
-1. For `incluster` installation  
-   - `make kube-up`
-   - `kubectl port-forward deployments/k8s-cm-mapper 8080:8080`
+## Features:
 
-Note: for security reasons the pods is configured to work with `default` namespace only. To change the behavior you need to tweak with [ConfigMap RBAC Policies](./helm/k8s-kube-watchtower/templates/cm-rbac.yaml) and [Namespace RBAC Policies](./helm/k8s-kube-watchtower/templates/ns-rbac.yaml)
+### Core Features
 
-2. For `remotecluster` installation
-   - `make docker-up`
-   - or `go run ./... remotecluster`
+- Real-time monitoring of Kubernetes cluster resources (namespaces, pods, deployments, services)
+- ConfigMap management (create, update, get)
+- Deployment management (scale, list, get YAML files)
+- Service creation and deletion
+- Pod log retrieval
+- Cluster logging and alerting
 
-visiting to `localhost:8080` should load a page like below if all ran successfully -
+### Additional Functionality
 
-![Kubernetes ConfigMap Editor - Home Page](./_examples/home_page.png "Kubernetes ConfigMap Editor")
+- CORS support for cross-origin requests
+- Ping endpoint for health checks
+- Static file serving for assets and spa files
 
-### Notable Stacks used in this tool - 
-- [Kubernets Go SDK](https://github.com/kubernetes/client-go)
-- [templ](https://github.com/a-h/templ)
-- [echo](https://github.com/labstack/echo)
-- [cobra](https://github.com/spf13/cobra)
-- [Ace Editr](https://ace.c9.io/)
+## Architecture:
+
+The Kube-Watchtower application consists of the following components:
+
+1. **Handler**: The core logic handler responsible for processing incoming requests.
+2. **KubeClient**: A wrapper around the Kubernetes API client, used to interact with the cluster.
+3. **Echo Server**: An HTTP server implementation based on the LabStack Echo framework.
+
+## Usage:
+
+### Running the Application
+
+To run the Kube-Watchtower application, simply execute the following command in your terminal:
+
+```bash
+go run main.go
+```
+
+The application will start and listen for incoming requests on port 8081.
+
+### API Endpoints
+
+Refer to the [API documentation](docs/api.md) for a comprehensive list of available endpoints and their usage details.
+
+## Getting Started:
+
+To get started with the Kube-Watchtower, follow these steps:
+
+1. Clone this repository.
+2. Run `go mod init` to initialize the Go module.
+3. Run `go run main.go` to start the application.
+4. Explore the available API endpoints using your preferred HTTP client or a tool like curl.
+
+## Troubleshooting:
+
+If you encounter any issues while running the Kube-Watchtower, refer to the [troubleshooting guide](docs/troubleshooting.md) for common problems and solutions.
+
+## License:
+
+The Kube-Watchtower is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+
+## Contributing:
+
+We welcome contributions to the Kube-Watchtower! If you're interested in contributing, please review our [contributor guidelines](docs/contributor-guidelines.md).
