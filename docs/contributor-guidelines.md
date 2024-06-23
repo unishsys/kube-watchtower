@@ -1,11 +1,11 @@
-// Welcome to the kube-watchtower project!
+# Welcome to the kube-watchtower project!
 
 **Contribution Guide**
 
 ### I. Before You Start
 
 - Make sure you have a GitHub account and are familiar with Git.
-- Read the [Code of Conduct](https://example.com/code-of-conduct) and understand your responsibilities as a contributor.
+- Read the [Code of Conduct](./code-of-conduct.md) and understand your responsibilities as a contributor.
 
 ### II. Setting Up Your Environment
 
