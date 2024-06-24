@@ -1,5 +1,7 @@
 # Kube-Watchtower
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/by-sabbir/kube-watchtower)](https://goreportcard.com/report/github.com/by-sabbir/kube-watchtower)
+
 ## Introduction:
 
 The Kube-Watchtower is a Kubernetes-based project designed to provide a centralized monitoring and management platform for cluster resources and deployments. This repository contains the source code for the Kube-Watchtower server-side application, written in Go.
