@@ -33,12 +33,17 @@ func (k *KubeClient) GetAllPodsInfo(ctx context.Context) ([]PodInfo, error) {
 	var px []PodInfo
 	pCh := make(chan PodInfo)
 	for _, pod := range allPods.Items {
-
 		go func() {
 			var p PodInfo
 			p.Namespace = pod.Namespace
 			p.Name = pod.Name
-			p.Restarts = pod.Status.ContainerStatuses[0].RestartCount
+
+			if len(pod.Status.ContainerStatuses) == 0 {
+				k.Logger.Error("pod has no container status", "pod", pod.Name)
+				p.Restarts = 0
+			} else {
+				p.Restarts = pod.Status.ContainerStatuses[0].RestartCount
+			}
 
 			podMetrics, err := mc.MetricsV1beta1().PodMetricses(p.Namespace).Get(ctx, p.Name, v1.GetOptions{})
 			if err != nil {

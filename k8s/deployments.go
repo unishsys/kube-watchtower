@@ -42,6 +42,7 @@ func (k *KubeClient) ListDeploymentsByNamespace(ctx context.Context, ns string) 
 		if deployment.Status.ReadyReplicas == 0 {
 			deploymentStatus = "error"
 		}
+
 		d := DeploymentState{
 			Name:             deployment.Name,
 			Replicas:         deployment.Status.Replicas,
